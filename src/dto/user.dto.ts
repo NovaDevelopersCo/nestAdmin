@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserDocument } from '../schemas/user.schema';
+import { User } from '../models/user.model';
 
 export class UserDto {
   @ApiProperty()
   login: string;
 
   @ApiProperty()
-  _id: string;
+  id: number;
 
-  constructor(model: UserDocument) {
+  constructor(model: User) {
     this.login = model.login;
-    this._id = model._id;
+    this.id = model.id;
   }
 }

@@ -5,11 +5,10 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/sequelize';
 import { ConfigService } from '@nestjs/config';
-import { User, UserDocument } from '../schemas/user.schema';
-import { Session, SessionDocument } from '../schemas/session.schema';
+import { User } from '../models/user.model';
+import { Session } from '../models/session.model';
 import { UserDto } from '../dto/user.dto';
 
 @Injectable()
@@ -17,9 +16,8 @@ export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Session.name)
-    private readonly sessionModel: Model<SessionDocument>,
+    @InjectModel(User) private readonly userModel: typeof User,
+    @InjectModel(Session) private readonly sessionModel: typeof Session,
   ) {}
 
   generateTokens(user: UserDto) {
@@ -32,7 +30,7 @@ export class TokenService {
   async validateAccessToken(token: string): Promise<string | null> {
     try {
       const { user } = this.jwtService.verify(token) as { user: UserDto };
-      return user._id;
+      return user.id.toString(); // Convert ID to string
     } catch (e) {
       throw new HttpException('Invalid access token', HttpStatus.UNAUTHORIZED);
     }
@@ -41,7 +39,7 @@ export class TokenService {
   async validateRefreshToken(token: string): Promise<string | null> {
     try {
       const { user } = this.jwtService.verify(token) as { user: UserDto };
-      return user._id;
+      return user.id.toString(); // Convert ID to string
     } catch (e) {
       throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
     }
@@ -49,19 +47,19 @@ export class TokenService {
 
   async saveToken(refreshToken: string, userId: string) {
     try {
-      const session = await this.sessionModel.findOne({ user: userId });
+      const session = await this.sessionModel.findOne({ where: { userId } });
 
       if (session) {
         session.refreshToken = refreshToken;
         return session.save();
       }
 
-      const newSession = new this.sessionModel({
-        user: userId,
+      const newSession = await this.sessionModel.create({
+        userId: +userId, // Преобразуем строку в число
         refreshToken,
       });
 
-      return newSession.save();
+      return newSession;
     } catch (e) {
       throw new HttpException(
         'Error saving token',
@@ -69,11 +67,12 @@ export class TokenService {
       );
     }
   }
-
   async refresh(token: string) {
     try {
       const userId = await this.validateRefreshToken(token);
-      const tokenFromDb = await this.sessionModel.findOne({ refreshToken: token });
+      const tokenFromDb = await this.sessionModel.findOne({
+        where: { refreshToken: token },
+      });
 
       if (!userId || !tokenFromDb) {
         throw new HttpException(
@@ -82,7 +81,7 @@ export class TokenService {
         );
       }
 
-      const user = await this.userModel.findById(userId);
+      const user = await this.userModel.findByPk(userId);
 
       if (!user) {
         throw new NotFoundException('User not found');
@@ -92,7 +91,7 @@ export class TokenService {
 
       const tokens = this.generateTokens(userDto);
 
-      await this.saveToken(tokens.refreshToken, user._id);
+      await this.saveToken(tokens.refreshToken, userId);
 
       return { tokens, user: userDto };
     } catch (e) {

@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from '../services/auth.service';
-import { TokenService } from '../services/TokenService';
+import { TokenService } from '../services/token.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { BadRequestException } from '@nestjs/common';
 
