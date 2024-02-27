@@ -17,9 +17,7 @@ import { ConfigModule } from '@nestjs/config';
       secret: 'your-secret-key',
       signOptions: { expiresIn: '1h' },
     }),
-    MongooseModule.forRoot(
-      'mongodb+srv://admin:admin@cluster0.wjkmhsf.mongodb.net/',
-    ),
+    MongooseModule.forRoot('MONGODB_CONNECTION_STRING'),
     ConfigModule.forRoot(),
   ],
   controllers: [AuthController],
