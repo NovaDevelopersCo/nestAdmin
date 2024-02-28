@@ -11,8 +11,8 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthService } from '../services/auth.service';
-import { TokenService } from '../services/token.service';
+import { AuthService } from './auth.service';
+import { TokenService } from './token.service';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { BadRequestException } from '@nestjs/common';
 

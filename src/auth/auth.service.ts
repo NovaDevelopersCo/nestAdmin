@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../models/user.model';
 import { Session } from '../models/session.model';
 import { TokenService } from './token.service';
-import { UserDto } from '../dto/user.dto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class AuthService {

@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { ConfigService } from '@nestjs/config';
 import { User } from '../models/user.model';
 import { Session } from '../models/session.model';
-import { UserDto } from '../dto/user.dto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class TokenService {
