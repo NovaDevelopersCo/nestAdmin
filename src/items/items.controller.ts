@@ -47,4 +47,21 @@ export class ItemsController {
   getByValue(@Param('id') id: number) {
     return this.itemsService.getItemById(id);
   }
+  @ApiOperation({ summary: 'Обновить товар по id' })
+  @Post('/:id/update')
+  @ApiResponse({ status: 200, type: Items })
+  @UseInterceptors(FileInterceptor('image'))
+  updateItem(
+    @Param('id') id: number,
+    @Body() updateDto: CreateItemDto,
+    @UploadedFile() image,
+  ) {
+    return this.itemsService.updateItem(id, updateDto, image);
+  }
+  @ApiOperation({ summary: 'Удалить товар по id' })
+  @Post('/:id/delete')
+  @ApiResponse({ status: 200, type: Items })
+  deleteItem(@Param('id') id: number) {
+    return this.itemsService.deleteItem(id);
+  }
 }
