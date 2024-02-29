@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -48,7 +50,7 @@ export class ItemsController {
     return this.itemsService.getItemById(id);
   }
   @ApiOperation({ summary: 'Обновить товар по id' })
-  @Post('/:id/update')
+  @Patch('/:id/update')
   @ApiResponse({ status: 200, type: Items })
   @UseInterceptors(FileInterceptor('image'))
   updateItem(
@@ -59,7 +61,7 @@ export class ItemsController {
     return this.itemsService.updateItem(id, updateDto, image);
   }
   @ApiOperation({ summary: 'Удалить товар по id' })
-  @Post('/:id/delete')
+  @Delete('/:id')
   @ApiResponse({ status: 200, type: Items })
   deleteItem(@Param('id') id: number) {
     return this.itemsService.deleteItem(id);

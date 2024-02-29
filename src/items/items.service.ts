@@ -4,6 +4,7 @@ import { Items } from './items.model';
 import { FilesService } from 'src/files/files.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { GetItemsFilterDto } from './dto/get-items-filter.dto';
+import { User } from '../models/user.model';
 
 @Injectable()
 export class ItemsService {
@@ -57,7 +58,6 @@ export class ItemsService {
     const item = await this.itemsRepository.findByPk(id);
 
     if (!item) {
-      // Handle case where the item is not found
       return null;
     }
 
@@ -73,25 +73,21 @@ export class ItemsService {
     item.save();
     return item;
   }
-  async updateItem(id: number, updateDto: CreateItemDto, image: any) {
-    const item = await this.itemsRepository.findByPk(id);
+  async updateItem(id: number, dto: CreateItemDto,image: any) {
+    try {
+      const card = await this.itemsRepository.findByPk(id);
 
-    if (!item) {
-      // Handle case where the item is not found
-      return null;
+      if (!card) {
+        return null;
+      }
+
+      const { ...updatedFields } = dto;
+
+      await card.update(updatedFields);
+
+      return card;
+    } catch (error) {
+      throw new Error('Ошибка при обновлении карточки');
     }
-
-    // Update item properties
-    item.title = updateDto.title;
-    item.description = updateDto.description;
-
-    if (image !== undefined) {
-      const fileName = await this.fileService.createFile(image);
-      item.image = fileName;
-    }
-
-    await item.save();
-
-    return item;
   }
 }

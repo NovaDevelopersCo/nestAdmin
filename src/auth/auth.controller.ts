@@ -8,8 +8,8 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  UseFilters,
-} from '@nestjs/common';
+  UseFilters, Get
+} from "@nestjs/common";
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { TokenService } from './token.service';
@@ -119,5 +119,14 @@ export class AuthController {
 
   private getRefreshToken(res: Response): string {
     return res.locals.user?.refreshToken;
+  }
+  @Get('users')
+  async getAllUsers(@Res() res: Response) {
+    try {
+      const users = await this.authService.getAllUsers();
+      return res.json(users);
+    } catch (error) {
+      throw new ApiExceptionFilter();
+    }
   }
 }

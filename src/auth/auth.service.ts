@@ -68,4 +68,12 @@ export class AuthService {
     const result = await this.sessionModel.destroy({ where: { refreshToken } });
     return result > 0;
   }
+  async getAllUsers() {
+    try {
+      const users = await this.userModel.findAll();
+      return users;
+    } catch (error) {
+      throw new Error('Error fetching all users');
+    }
+  }
 }

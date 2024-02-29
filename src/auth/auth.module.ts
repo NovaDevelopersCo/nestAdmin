@@ -15,8 +15,8 @@ import { Session } from '../models/session.model'; // Assuming the path is corre
     SequelizeModule.forFeature([User, Session]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET_KEY'),
+      useFactory: async () => ({
+        secret: process.env.JWT_SECRET,
         signOptions: {
           expiresIn: '30s', // Adjust as needed
         },
